@@ -519,10 +519,10 @@ void handle_instruction()
 
 			case 0x0000000C:  //SYSTEMCALL
             CURRENT_STATE.REGS[2] = 0x0A;
-			// if(CURRENT_STATE.REGS[2] == 0x0A)
-			// {
+			if(CURRENT_STATE.REGS[2] == 0x0A)
+			{
 				RUN_FLAG = FALSE;
-			// }
+			}
             NEXT_STATE.PC = CURRENT_STATE.PC + 4;
 			break;
                 
@@ -1261,13 +1261,13 @@ void print_instruction(uint32_t addr){
             case 0x0C000000: //JAL
             target = instruction & 0x03FFFFFF;
             target = target << 2; 
-            printf("JAL: %u\n", target);
+            printf("JAL: %x\n", target);
             break;
 
             case 0x08000000: //J
             target = instruction & 0x03FFFFFF;
             target = target << 2;
-            printf("J: %u\n", target);
+            printf("J: %x\n", target);
             break;
 
             case 0x80000000: //LB
