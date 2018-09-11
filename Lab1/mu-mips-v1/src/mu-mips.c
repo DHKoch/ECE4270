@@ -319,7 +319,7 @@ void handle_instruction()
     uint32_t mem_location = 0;
     uint32_t temp = 0;
     uint32_t target = 0;
-    printf("Instruction: %x\n",instruction);
+    
     if((instruction | 0x03ffffff) == 0x03ffffff){
         Op_Code_Special = instruction & 0x0000003f;
         
@@ -525,7 +525,6 @@ void handle_instruction()
 			}
             NEXT_STATE.PC = CURRENT_STATE.PC + 4;
 			break;
-                
         }
     }
     else{
@@ -646,7 +645,7 @@ void handle_instruction()
             rs = rs >> 21;
             rt = instruction & 0x001F0000;
 			rt = rt >> 16;
-            NEXT_STATE.REGS[rt] = immediate & CURRENT_STATE.REGS[rt];
+            NEXT_STATE.REGS[rt] = immediate & CURRENT_STATE.REGS[rs];
             
             NEXT_STATE.PC = CURRENT_STATE.PC + 4;
             break;
@@ -657,7 +656,7 @@ void handle_instruction()
             rs = rs >> 21;
             rt = instruction & 0x001F0000;
 			rt = rt >> 16;
-            NEXT_STATE.REGS[rt] = immediate | CURRENT_STATE.REGS[rt];
+            NEXT_STATE.REGS[rt] = immediate | CURRENT_STATE.REGS[rs];
             
             NEXT_STATE.PC = CURRENT_STATE.PC + 4;
             break;
@@ -668,7 +667,7 @@ void handle_instruction()
             rs = rs >> 21;
             rt = instruction & 0x001F0000;
 			rt = rt >> 16;
-            NEXT_STATE.REGS[rt] = immediate ^ CURRENT_STATE.REGS[rt];
+            NEXT_STATE.REGS[rt] = immediate ^ CURRENT_STATE.REGS[rs];
             
             NEXT_STATE.PC = CURRENT_STATE.PC + 4;
             break;
@@ -737,7 +736,7 @@ void handle_instruction()
             target = instruction & 0x03FFFFFF;
             target = target << 2;
             temp = CURRENT_STATE.PC & 0xF0000000;
-            NEXT_STATE.PC = temp | target; //changed this to an OR, not sure if right
+            NEXT_STATE.PC = temp | target; 
             
             break;
 
@@ -745,7 +744,7 @@ void handle_instruction()
             target = instruction & 0x03FFFFFF;
             target = target << 2;
             NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 8;
-            temp = CURRENT_STATE.PC & 0xF0000000; //changed this to an OR, not sure if right
+            temp = CURRENT_STATE.PC & 0xF0000000;
             NEXT_STATE.PC = temp | target;
             
             break;
@@ -903,7 +902,7 @@ void print_instruction(uint32_t addr){
             rt = rt >> 16;
             rd = instruction & 0x0000F800;
             rd = rd >> 11;
-            printf("ADD: $%u = $%u + $%u\n",rd, rs, rt);
+            printf("ADD $%u, $%u, $%u\n",rd, rs, rt);
             break;
 
             case 0x00000021: //ADDU
@@ -913,7 +912,7 @@ void print_instruction(uint32_t addr){
             rt = rt >> 16;
             rd = instruction & 0x0000F800;
             rd = rd >> 11;
-            printf("ADDU: $%u = $%u + $%u\n",rd, rs, rt);
+            printf("ADDU $%u, $%u, $%u\n",rd, rs, rt);
             break;
 
             case 0x00000022: //SUB
@@ -923,7 +922,7 @@ void print_instruction(uint32_t addr){
 			rt = rt >> 16;
 			rd = instruction & 0x0000F800;
 			rd = rd >> 11;
-			printf("SUB: $%u = $%u - $%u\n", rd, rs, rt);
+			printf("SUB $%u, $%u, $%u\n", rd, rs, rt);
 			break;
 
             case 0x00000023: //SUBU
@@ -933,7 +932,7 @@ void print_instruction(uint32_t addr){
 			rt = rt >> 16;
 			rd = instruction & 0x0000F800;
 			rd = rd >> 11;
-			printf("SUBU: $%u = $%u - $%u\n", rd, rs, rt);
+			printf("SUBU $%u, $%u, $%u\n", rd, rs, rt);
             break;
 
 			case 0x00000018: //MULT
@@ -941,7 +940,7 @@ void print_instruction(uint32_t addr){
 			rs = rs >> 21;
 			rt = instruction & 0x001F0000;
 			rt = rt >> 16;
-			printf("MULT: $%u * $%u\n", rs, rt);
+			printf("MULT $%u, $%u\n", rs, rt);
 			break;
 
             case 0x00000019: //MULT
@@ -949,7 +948,7 @@ void print_instruction(uint32_t addr){
 			rs = rs >> 21;
 			rt = instruction & 0x001F0000;
 			rt = rt >> 16;
-            printf("MULTU: $%u * $%u\n", rs, rt);
+            printf("MULTU $%u, $%u\n", rs, rt);
             break;
 
             case 0x0000001A: //DIV
@@ -957,7 +956,7 @@ void print_instruction(uint32_t addr){
 			rs = rs >> 21;
 			rt = instruction & 0x001F0000;
 			rt = rt >> 16;
-			printf("DIV: $%u / $%u\n", rs, rt);
+			printf("DIV $%u, $%u\n", rs, rt);
             break;
 
             case 0x00000001B: //DIVU
@@ -965,7 +964,7 @@ void print_instruction(uint32_t addr){
 			rs = rs >> 21;
 			rt = instruction & 0x001F0000;
 			rt = rt >> 16;
-			printf("DIVU: $%u / $%u\n", rs, rt);
+			printf("DIVU $%u, $%u\n", rs, rt);
             break;
 
 			case 0x00000024: //AND
@@ -975,7 +974,7 @@ void print_instruction(uint32_t addr){
 			rt = rt >> 16;
 			rd = instruction & 0x0000F800;
 			rd = rd >> 11;
-			printf("AND: $%u = $%u & $%u\n", rd, rs, rt);
+			printf("AND $%u, $%u, $%u\n", rd, rs, rt);
 			break;
 
 			case 0x00000025: //OR
@@ -985,7 +984,7 @@ void print_instruction(uint32_t addr){
 			rt = rt >> 16;
 			rd = instruction & 0x0000F800;
 			rd = rd >> 11;
-			printf("OR: $%u = $%u | $%u\n", rd, rs, rt);
+			printf("OR $%u, $%u, $%u\n", rd, rs, rt);
 			break;
 
 			case 0x00000026: //XOR
@@ -995,7 +994,7 @@ void print_instruction(uint32_t addr){
 			rt = rt >> 16;
 			rd = instruction & 0x0000F800;
 			rd = rd >> 11;
-			printf("XOR: $%u = $%u ^ $%u\n", rd, rs, rt);
+			printf("XOR $%u, $%u, $%u\n", rd, rs, rt);
 			break;
 
 			case 0x00000027: //NOR
@@ -1005,7 +1004,7 @@ void print_instruction(uint32_t addr){
 			rt = rt >> 16;
 			rd = instruction & 0x0000F800;
 			rd = rd >> 11;
-			printf("NOR: $%u = ~($%u ^ $%u)\n", rd, rs, rt);
+			printf("NOR $%u, $%u, $%u\n", rd, rs, rt);
 			break;
 
             case 0x0000002A: //SLT
@@ -1015,7 +1014,7 @@ void print_instruction(uint32_t addr){
 			rt = rt >> 16;
 			rd = instruction & 0x0000F800;
 			rd = rd >> 11;
-            printf("SLT: if($%u < $%u) $%u = 0x01 if($%u >= $%u) $%u = 0x00\n", rs, rt, rd, rs, rt, rd);
+            printf("SLT $%u, $%u, $%u\n", rd, rs, rt);
             break;
 
             case 0x00000000: //SLL
@@ -1025,7 +1024,7 @@ void print_instruction(uint32_t addr){
 			rd = rd >> 11;
             sa = instruction & 0x000007C0;
             sa = sa >> 6;
-			printf("SLL: $%u = $%u << %u\n", rd, rt, sa);
+			printf("SLL $%u, $%u, %u\n", rd, rt, sa);
             break;
 
             case 0x00000002: //SRL
@@ -1035,7 +1034,7 @@ void print_instruction(uint32_t addr){
 			rd = rd >> 11;
             sa = instruction & 0x000007C0;
             sa = sa >> 6;
-			printf("SRL: $%u = $%u >> %u\n", rd, rt, sa);
+			printf("SRL $%u, $%u, %u\n", rd, rt, sa);
             break;
 
             case 0x00000003: //SRA
@@ -1045,43 +1044,43 @@ void print_instruction(uint32_t addr){
 			rd = rd >> 11;
             sa = instruction & 0x000007C0;
             sa = sa >> 6;
-			printf("SRA: $%u = $%u >> %u\n", rd, rt, sa);
+			printf("SRA $%u, $%u, %u\n", rd, rt, sa);
             break;
 
             case 0x00000010: //MFHI
             rd = instruction & 0x0000F800;
 			rd = rd >> 11;
-			printf("MFHI: $%u = CURRENT_STATE.HI\n",rd);
+			printf("MFHI $%u\n",rd);
             break;
 
             case 0x00000012: //MFLO
 			rd = instruction & 0x0000F800;
 			rd = rd >> 11;
-			printf("MFHI: $%u = CURRENT_STATE.HI\n",rd);
+			printf("MFHI $%u\n",rd);
             break;
 
             case 0x00000011: //MTHI
             rs = instruction & 0x03E00000;
 			rs = rs >> 21;
-			printf("MTHI: NEXT_STATE.HI = $%u\n", rs);
+			printf("MTHI $%u\n", rs);
             break;
 
             case 0x00000013: //MTLO
 			rs = instruction & 0x03E00000;
 			rs = rs >> 21;
-			printf("MTLO: NEXT_STATE.LO = $%u\n", rs);
+			printf("MTLO $%u\n", rs);
             break;
 
             case 0x00000008: //JR
             rs = instruction & 0x03E00000;
 			rs = rs >> 21;
-			printf("JR: NEXT_STATE.PC = $%u\n", rs);
+			printf("JR $%u\n", rs);
             break;
 
             case 0x00000009: //JALR
             rs = instruction & 0x03E00000;
 			rs = rs >> 21;
-			printf("JALR: NEXT_STATE.PC = $%u\n", rs);
+			printf("JALR $%u\n", rs);
             break;
 
 			case 0x0000000C:  //SYSTEMCALL
@@ -1095,10 +1094,10 @@ void print_instruction(uint32_t addr){
         switch(op){
             case 0x3C000000: //LUI
             immediate = instruction & 0x0000FFFF;
-            immediate = immediate << 16;
+            // immediate = immediate << 16;
             rt = instruction & 0x001F0000;
             rt = rt >> 16;
-            printf("LUI: $%u = %u\n", rt, immediate);
+            printf("LUI $%u, %u\n", rt, immediate);
             break;
                 
             case 0x24000000: //ADDIU
@@ -1113,7 +1112,7 @@ void print_instruction(uint32_t addr){
             rt = rt >> 16;
             rs = instruction & 0x03E00000;
             rs = rs >> 21;
-            printf("ADDIU: $%u = $%u + %u\n", rt, rs, immediate);
+            printf("ADDIU $%u, $%u, %u\n", rt, rs, immediate);
             break;
 
             case 0x20000000: //ADDI
@@ -1128,7 +1127,7 @@ void print_instruction(uint32_t addr){
             rt = rt >> 16;
             rs = instruction & 0x03E00000;
             rs = rs >> 21;
-            printf("ADDI: $%u = $%u + %u\n", rt, rs, immediate);
+            printf("ADDI $%u, $%u, %u\n", rt, rs, immediate);
             break;
                 
             case 0x8C000000: //LW
@@ -1145,7 +1144,7 @@ void print_instruction(uint32_t addr){
             rt = rt >> 16;
             mem_location = CURRENT_STATE.REGS[base] + immediate;
             mem_location = mem_location | 0x00010000;
-            printf("LW: $%u = MEM[%x]\n",rt, mem_location);
+            printf("LW $%u, %u(%u)\n",rt, immediate, base);
             break;
 
             case 0x84000000: //LH
@@ -1162,7 +1161,7 @@ void print_instruction(uint32_t addr){
             rt = rt >> 16;
             mem_location = CURRENT_STATE.REGS[base] + immediate;
             mem_location = mem_location | 0x00010000;
-            printf("LH: $%u = MEM[%x]\n", rt, mem_location);
+            printf("LH $%u, %u(%u)\n",rt, immediate, base);
             break;
 
             case 0xAC000000: //SW
@@ -1179,7 +1178,7 @@ void print_instruction(uint32_t addr){
             }
 			mem_location = CURRENT_STATE.REGS[base] + immediate;
             mem_location = mem_location | 0x00010000;
-			printf("SW: MEM[%x] = $%u\n", mem_location, rt);
+			printf("SW $%u, %u(%u)\n",rt, immediate, base);
 			break;
 
             case 0x30000000: //ANDI
@@ -1188,7 +1187,7 @@ void print_instruction(uint32_t addr){
             rs = rs >> 21;
             rt = instruction & 0x001F0000;
 			rt = rt >> 16;
-            printf("ANDI: $%u = $%u & %u\n", rt, rs, immediate);
+            printf("ANDI $%u, $%u, %u\n", rt, rs, immediate);
             break;
 
             case 0x34000000: //ORI
@@ -1197,7 +1196,7 @@ void print_instruction(uint32_t addr){
             rs = rs >> 21;
             rt = instruction & 0x001F0000;
 			rt = rt >> 16;
-            printf("ORI: $%u = $%u | %u\n", rt, rs, immediate);
+            printf("ORI $%u, $%u, %u\n", rt, rs, immediate);
             break;
 
             case 0x38000000: //XORI
@@ -1206,7 +1205,7 @@ void print_instruction(uint32_t addr){
             rs = rs >> 21;
             rt = instruction & 0x001F0000;
 			rt = rt >> 16;
-            printf("XORI: $%u = $%u ^ %u\n", rt, rs, immediate);
+            printf("XORI $%u, $%u, %u\n", rt, rs, immediate);
             break;
 
             case 0x28000000: //SLTI
@@ -1221,7 +1220,7 @@ void print_instruction(uint32_t addr){
             rs = rs >> 21;
             rt = instruction & 0x001F0000;
 			rt = rt >> 16;
-            printf("SLTI: if($%u < %u) $%u = 0x01 if($%u >= %u) $%u = 0x00\n", rs, immediate, rt, rs, immediate, rt);
+            printf("SLTI $%u, %u, $%u\n", rt, rs, immediate);
             break;
 
             case 0xA4000000: //SH
@@ -1238,7 +1237,7 @@ void print_instruction(uint32_t addr){
             }
 			mem_location = CURRENT_STATE.REGS[base] + immediate;
             mem_location = mem_location | 0x00010000;
-            printf("SH: MEM[%x] = $%u\n", mem_location, rt);
+            printf("SH $%u, %u(%u)\n",rt, immediate, base);
             break;
 
             case 0xA0000000: //SB
@@ -1255,19 +1254,19 @@ void print_instruction(uint32_t addr){
             }
 			mem_location = CURRENT_STATE.REGS[base] + immediate;
             mem_location = mem_location | 0x00010000;
-            printf("SB: MEM[%x] = $%u\n", mem_location, rt);
+            printf("SB $%u, %u(%u)\n",rt, immediate, base);
             break;
 
             case 0x0C000000: //JAL
             target = instruction & 0x03FFFFFF;
             target = target << 2; 
-            printf("JAL: %x\n", target);
+            printf("JAL %x\n", target);
             break;
 
             case 0x08000000: //J
             target = instruction & 0x03FFFFFF;
             target = target << 2;
-            printf("J: %x\n", target);
+            printf("J %x\n", target);
             break;
 
             case 0x80000000: //LB
@@ -1284,7 +1283,7 @@ void print_instruction(uint32_t addr){
             rt = rt >> 16;
             mem_location = CURRENT_STATE.REGS[base] + immediate;
             mem_location = mem_location | 0x00010000;
-            printf("LB: $%u = MEM[%x]\n", rt, mem_location);
+            printf("LB $%u, %u(%u)\n",rt, immediate, base);
             break;
 
             case 0x10000000: //BEQ
@@ -1300,7 +1299,7 @@ void print_instruction(uint32_t addr){
             else{
                 target = target & 0x0000FFFF;
             }
-            printf("BEQ: if($%u = $%u) PC = PC + %u\n", rs, rt, target);
+            printf("BEQ $%u, $%u, %u\n", rs, rt, target);
             break;
 
             case 0x14000000: //BNE
@@ -1316,7 +1315,7 @@ void print_instruction(uint32_t addr){
             else{
                 target = target & 0x0000FFFF;
             }
-            printf("BNE: if($%u != $%u) PC = PC + %u\n", rs, rt, target);
+            printf("BNE $%u, $%u, %u\n", rs, rt, target);
             break; 
 
             case 0x18000000: //BLEZ
@@ -1330,7 +1329,7 @@ void print_instruction(uint32_t addr){
             else{
                 target = target & 0x0000FFFF;
             }
-            printf("BLEZ: if($%u <= 0) PC + %u\n", rs, target);
+            printf("BLEZ $%u, %u\n", rs, target);
             break;
 
             case 0x1C000000: //BGTZ
@@ -1344,7 +1343,7 @@ void print_instruction(uint32_t addr){
             else{
                 target = target & 0x0000FFFF;
             }
-            printf("BGTZ: if($%u > 0) PC + %u\n", rs, target);
+            printf("BGTZ $%u, %u\n", rs, target);
             break; 
 
             case 0x04000000: //BLTZ, BGEZ
@@ -1361,10 +1360,10 @@ void print_instruction(uint32_t addr){
                 target = target & 0x0000FFFF;
             }
             if(rt == 0x01){ //BGEZ
-                printf("BGEZ: if($%u >= 0) PC + %u\n", rs, target);
+                printf("BGEZ $%u, %u\n", rs, target);
             }
             else{ //BLTZ
-                printf("BLTZ: if($%u < 0) PC + %u\n", rs, target);
+                printf("BLTZ $%u, %u\n", rs, target);
             }
             break; 
         }
